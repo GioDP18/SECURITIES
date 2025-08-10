@@ -36,8 +36,6 @@ import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
 import FileUpload from 'primevue/fileupload';
 import { onMounted, ref } from 'vue';
-import axios from 'axios';
-import CryptoJS from 'crypto-js';
 import { addProduct } from '@/api/api.js';
 
 const fileUploadRef = ref(null);

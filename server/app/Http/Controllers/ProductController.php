@@ -18,10 +18,34 @@ class ProductController extends Controller
     /**
      * Display a listing of the products with their images.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $products = Product::with('images')->get();
-        return response()->json($products);
+        try {
+            $query = Product::with('images');
+
+            if ($request->filled('search')) {
+                $search = $request->input('search');
+                $query->where(function ($q) use ($search) {
+                    $q->where('product', 'LIKE', "%{$search}%")
+                    ->orWhere('owner', 'LIKE', "%{$search}%");
+                });
+            }
+
+            $products = $query->paginate(10);
+
+            foreach ($products as $product) {
+                foreach ($product->images ?? [] as $image) {
+                    $image->path = url(Storage::disk('public')->url($image->path));
+                }
+            }
+
+            return response()->json($products, 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => $e->getMessage()
+            ], $e->getCode() ?: 500);
+        }
     }
 
     /**
@@ -46,7 +70,8 @@ class ProductController extends Controller
 
             if ($request->hasFile('images')) {
                 foreach ($request->file('images') as $file) {
-                    $path = $file->store('', 'uploaded');
+                    $file->store('', 'uploaded');
+                    $path = $file->store('uploads', 'public');
                     $product->images()->create([
                         'path' => $path
                     ]);

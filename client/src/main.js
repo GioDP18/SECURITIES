@@ -6,17 +6,16 @@ import App from './App.vue'
 import router from './router'
 import { usePublicKey } from './composables/usePublicKey'
 
-const app = createApp(App)
+async function bootstrap() {
+    const app = createApp(App)
 
-// Initialize public key
-const { fetchPublicKey } = usePublicKey()
-fetchPublicKey()
+    // Initialize public key
+    const { fetchPublicKey } = usePublicKey()
+    await fetchPublicKey()
 
-app.use(PrimeVue, {
-    theme: {
-        preset: Aura
-    }
-})
+    app.use(PrimeVue, { theme: { preset: Aura } })
+    app.use(router)
+    app.mount('#app')
+}
 
-app.use(router)
-app.mount('#app')
+bootstrap()

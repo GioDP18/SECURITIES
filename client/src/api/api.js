@@ -12,9 +12,6 @@ const obfuscate = (payloads) => {
     const secretKey = import.meta.env.VITE_APP_OBFUSCATION_KEY;
     const signature = CryptoJS.HmacSHA256(encryptedPayloads, secretKey).toString();
 
-    console.log('Payloads:', stringifiedPayloads);
-    console.log('secretKey:', secretKey);
-
     return {
         encryptedPayloads,
         signature,
@@ -28,8 +25,8 @@ const obfuscate = (payloads) => {
  * @param {object} data - Data payload (must include payloads property for encryption)
  * @param {boolean} file - Whether the request is a file upload (multipart/form-data)
  */
-export const publicApi = async (method, apiUrl, data, files = null) => {
-    const { encryptedPayloads, signature } = obfuscate(data.payloads);
+export const publicApi = async (method, apiUrl, data = {}, files = null) => {
+    const { encryptedPayloads, signature } = obfuscate(data?.payloads);
     let formData = new FormData();
     formData.append("data", encryptedPayloads);
 
@@ -66,4 +63,5 @@ export const publicApi = async (method, apiUrl, data, files = null) => {
 };
 
 // Example usage:
+export const getProducts = (data) => {return publicApi('get', `/api/products${data.params??''}`, data)};
 export const addProduct = (data, files) => {return publicApi('post', '/api/products', data, files)};
