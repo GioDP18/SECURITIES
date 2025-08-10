@@ -1,0 +1,10 @@
+** Open GIT bash to generate private.pem and public.pem **
+
+
+1. Check if OpenSSL is ready in your git bash 
+- openssl version
+
+
+2. If ready, run these commands to generate:
+- openssl genrsa -out private.pem 2048
+- openssl rsa -in private.pem -pubout -out public.pem
